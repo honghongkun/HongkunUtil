@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Hong.ssm.dao.BasGradeMapper" >
+  <resultMap id="BaseResultMap" type="com.Hong.ssm.bean.BasGrade" >
+    <id column="bas_id" property="basId" jdbcType="INTEGER" />
+    <result column="bas_stu_grade" property="basStuGrade" jdbcType="INTEGER" />
+    <result column="bas_name" property="basName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    bas_id, bas_stu_grade, bas_name
+  </sql>    
+  
+  <!-- 查询StuGrade为1的年级 -->
+   <select id="selbasStuGradeBy1" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.BasGrade" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_grade
+    where bas_stu_grade = 1
+  </select>
+  <!-- 查询StuGrade为2的年级 -->
+   <select id="selbasStuGradeBy2" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.BasGrade" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_grade
+    where bas_stu_grade = 2
+  </select>
+  
+  <!-- 查询StuGrade的所有年级 -->
+   <select id="selbasStuGrade" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.BasGrade" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_grade
+  </select>
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.BasGradeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from bas_grade
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_grade
+    where bas_id = #{basId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from bas_grade
+    where bas_id = #{basId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.Hong.ssm.bean.BasGradeExample" >
+    delete from bas_grade
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.Hong.ssm.bean.BasGrade" >
+    insert into bas_grade (bas_id, bas_stu_grade, bas_name
+      )
+    values (#{basId,jdbcType=INTEGER}, #{basStuGrade,jdbcType=INTEGER}, #{basName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.Hong.ssm.bean.BasGrade" >
+    insert into bas_grade
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="basId != null" >
+        bas_id,
+      </if>
+      <if test="basStuGrade != null" >
+        bas_stu_grade,
+      </if>
+      <if test="basName != null" >
+        bas_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="basId != null" >
+        #{basId,jdbcType=INTEGER},
+      </if>
+      <if test="basStuGrade != null" >
+        #{basStuGrade,jdbcType=INTEGER},
+      </if>
+      <if test="basName != null" >
+        #{basName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.Hong.ssm.bean.BasGradeExample" resultType="java.lang.Integer" >
+    select count(*) from bas_grade
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update bas_grade
+    <set >
+      <if test="record.basId != null" >
+        bas_id = #{record.basId,jdbcType=INTEGER},
+      </if>
+      <if test="record.basStuGrade != null" >
+        bas_stu_grade = #{record.basStuGrade,jdbcType=INTEGER},
+      </if>
+      <if test="record.basName != null" >
+        bas_name = #{record.basName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update bas_grade
+    set bas_id = #{record.basId,jdbcType=INTEGER},
+      bas_stu_grade = #{record.basStuGrade,jdbcType=INTEGER},
+      bas_name = #{record.basName,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.Hong.ssm.bean.BasGrade" >
+    update bas_grade
+    <set >
+      <if test="basStuGrade != null" >
+        bas_stu_grade = #{basStuGrade,jdbcType=INTEGER},
+      </if>
+      <if test="basName != null" >
+        bas_name = #{basName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where bas_id = #{basId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.Hong.ssm.bean.BasGrade" >
+    update bas_grade
+    set bas_stu_grade = #{basStuGrade,jdbcType=INTEGER},
+      bas_name = #{basName,jdbcType=VARCHAR}
+    where bas_id = #{basId,jdbcType=INTEGER}
+  </update>
+</mapper>

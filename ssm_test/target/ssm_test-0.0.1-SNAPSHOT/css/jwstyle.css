@@ -1,0 +1,78 @@
+a.gride{
+	font-size:16px; color: #000;
+	margin:0px 10px;
+}
+a.gride :hover{
+	font-size:16px; color: #1E9FFF;
+	position:relative;
+	top:1px;left:1px;
+	
+}
+
+a.gridd{
+	font-size:16px; color: #000;
+	margin:0px 10px;
+}
+a.gridd :hover{
+	font-size:16px; color: #ff0000;
+	position:relative;
+	top:1px;left:1px;
+}
+
+a.grids{
+	font-size:16px; color: #000;
+	margin:0px 10px;
+}
+a.grids :hover{
+	font-size:16px; color: #5FB878;
+	position:relative;
+	top:1px;left:1px;
+}
+
+.jw-input{
+    height: 30px;
+    line-height: 28px;
+    border: 1px solid #D2D2D2;
+    background-color: #fff;
+    border-radius: 2px;
+    display: block;
+    width: 100%;
+    padding:0px 5px;
+}
+.jw-input:hover{
+    border-color: #009688!important;
+}
+.jw-input:focus{
+    border-color: #009688!important;
+}
+
+.mr-5{
+	margin-right: 5px;
+}
+.ml-5{
+	margin-left: 5px;
+}
+.mr-10{
+	margin-right: 10px;
+}
+.ml-10{
+	margin-left: 10px;
+}
+.mr-20{
+	margin-right: 20px;
+}
+.ml-20{
+	margin-left: 20px;
+}
+.fl{
+	float: left;
+}
+.fr{
+	float: right;
+}
+.w-180{
+	 width: 180px;
+}
+.w-200{
+	 width: 200px;
+}

@@ -1,0 +1,789 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Hong.ssm.dao.BasStuMapper" >
+  <resultMap id="BaseResultMap" type="com.Hong.ssm.bean.BasStu" >
+    <id column="stu_id" property="stuId" jdbcType="INTEGER" />
+    <result column="org_code" property="orgCode" jdbcType="INTEGER" />
+    <result column="stu_name" property="stuName" jdbcType="VARCHAR" />
+    <result column="stu_idcaed" property="stuIdcaed" jdbcType="VARCHAR" />
+    <result column="stu_code" property="stuCode" jdbcType="VARCHAR" />
+    <result column="stu_temp_code" property="stuTempCode" jdbcType="INTEGER" />
+    <result column="stu_sex" property="stuSex" jdbcType="VARCHAR" />
+    <result column="stu_nation" property="stuNation" jdbcType="VARCHAR" />
+    <result column="stu_province" property="stuProvince" jdbcType="VARCHAR" />
+    <result column="stu_address" property="stuAddress" jdbcType="VARCHAR" />
+    <result column="stu_grade" property="stuGrade" jdbcType="VARCHAR" />
+    <result column="stu_type" property="stuType" jdbcType="INTEGER" />
+    <result column="stu_status" property="stuStatus" jdbcType="INTEGER" />
+    <result column="stu_status_type" property="stuStatusType" jdbcType="VARCHAR" />
+    <result column="stu_email" property="stuEmail" jdbcType="VARCHAR" />
+    <result column="stu_pyname" property="stuPyname" jdbcType="VARCHAR" />
+    <result column="stu_birthday" property="stuBirthday" jdbcType="VARCHAR" />
+    <result column="tuid" property="tuid" jdbcType="VARCHAR" />
+    <result column="tudate" property="tudate" jdbcType="VARCHAR" />
+    <result column="xuid" property="xuid" jdbcType="VARCHAR" />
+    <result column="xudate" property="xudate" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="basStuExtResultMap"  type="com.Hong.ssm.bean.BasStuExt" extends="BaseResultMap">
+  	<association property="basOrg" javaType="com.Hong.ssm.bean.BasOrg">
+  		<id column="org_id"   property="orgId"  />
+  		<result column="org_name" property="orgName"  />
+  		 <result column="org_codeBystu" property="orgCodebystu"/>
+  	</association>
+  	<association property="basGrade" javaType="com.Hong.ssm.bean.BasGrade">
+  		 <id column="bas_id" property="basId"/>
+    <result column="bas_name" property="basName"/>
+  	</association>
+  </resultMap>
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    stu_id, org_code, stu_name, stu_idcaed, stu_code, stu_temp_code, stu_sex, stu_nation, 
+    stu_province, stu_address, stu_grade, stu_type, stu_status, stu_status_type, stu_email, 
+    stu_pyname, stu_birthday, tuid, tudate, xuid, xudate
+  </sql>
+  
+  
+  <sql id="Base_Column_List_ext" >
+      stu_id, org_code, stu_name, stu_idcaed, stu_code, stu_temp_code, stu_sex, stu_nation, 
+    stu_province, stu_address, stu_grade, stu_type, stu_status, stu_status_type, stu_email, 
+    stu_pyname, stu_birthday, tuid, tudate, xuid, xudate,org_codeBystu
+  </sql>
+  <sql id="Base_Column_List_bas" >
+      stu_id, org_code, stu_name, stu_idcaed, stu_code, stu_temp_code, stu_sex, stu_nation, 
+    stu_province, stu_address, stu_grade, stu_type, stu_status, stu_status_type, stu_email, 
+    stu_pyname, stu_birthday, tuid, tudate, xuid, xudate,org_codeBystu,bas_name
+  </sql>
+  
+  <!-- 关联组织结构表查询下拉编号
+   <select id="selBasStuselect" parameterType="basStu" resultMap="basStuExtResultMap">
+    select
+     <include refid="Base_Column_List_ext" />
+     from bas_stu t left join bas_org t1 on t.org_code =t1.org_id
+  </select> -->
+  
+  
+   <!-- 查询学籍ID和获取组织编号 -->
+   <select id="selBasStuExtByID" parameterType="basStu" resultMap="basStuExtResultMap">
+    select
+     <include refid="Base_Column_List_ext" />
+     from bas_stu t left join bas_org t1 on t.org_code =t1.org_id
+    <where>
+      and stu_id = #{stuId,jdbcType=INTEGER}
+    </where>
+  </select>
+  
+   <!-- 关联组织结构表信息传媒学院Orgcode为1的学生 -->
+   <select id="selOrgcodelist" parameterType="basStu" resultMap="basStuExtResultMap">
+     select
+    <include refid="Base_Column_List_bas" />
+     from bas_stu t left 
+      join bas_org t1 on t.org_code =t1.org_id
+      join bas_grade t2 on t.stu_grade =t2.bas_id
+     <where>
+     and t.org_code=1
+    	<if test="stuName!=null">
+    	  and (stu_name like CONCAT('%',#{stuName},'%')
+    	   		)
+    	</if>
+    </where>
+  </select>
+   <!-- 关联组织结构表医护学院Orgcode为2的学生 -->
+  <select id="selOrgcodelist2" parameterType="basStu" resultMap="basStuExtResultMap">
+     select
+    <include refid="Base_Column_List_bas" />
+     from bas_stu t left 
+      join bas_org t1 on t.org_code =t1.org_id
+      join bas_grade t2 on t.stu_grade =t2.bas_id
+     <where>
+     and t.org_code=2
+    	<if test="stuName!=null">
+    	  and (stu_name like CONCAT('%',#{stuName},'%')
+    	   		)
+    	</if>
+    </where>
+  </select>
+  
+  
+  <!-- 关联组织结构表查询编号 -->
+   <select id="selBasStuOrBasOrglist" parameterType="basStu" resultMap="basStuExtResultMap">
+    select
+    <include refid="Base_Column_List_bas" />
+     from bas_stu t left 
+     join bas_org t1 on t.org_code =t1.org_id
+     join bas_grade t2 on t.stu_grade =t2.bas_id
+     <where>
+    	<if test="stuName!=null">
+    	  and (stu_name like CONCAT('%',#{stuName},'%') 
+	    	   		or  stu_idcaed like CONCAT('%',#{stuIdcaed},'%')
+	    	   		or  stu_code like CONCAT('%',#{stuCode},'%')
+	    	   		or  stu_temp_code like CONCAT('%',#{stuTempCode},'%')
+    	   		)
+    	</if>
+    </where>
+  </select>
+  
+  <!-- 查询学籍列表，查询全部 -->
+  <select id="selBasStulist" resultMap="BaseResultMap" parameterType="basStu" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_stu
+  </select>
+  
+   <!-- 查询男学生 -->
+  <select id="selStuSexN" resultMap="BaseResultMap" parameterType="basStu" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_stu where stu_sex ='男'
+  </select>
+  <!-- 查询女学生 -->
+  <select id="selStuSexV" resultMap="BaseResultMap" parameterType="basStu" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_stu where stu_sex ='女'
+  </select>
+   <!-- 删除 -->
+   <delete id="delBasStu" parameterType="java.lang.Integer" >
+    delete from bas_stu
+    where stu_id = #{stuId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 查询ID stuId -->
+ <select id="selBasStuID" resultMap="BaseResultMap" parameterType="int" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_stu
+    where stu_id = #{stuId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 添加学籍addBasStu -->
+  <insert id="addBasStu" parameterType="com.Hong.ssm.bean.BasStu" >
+    insert into bas_stu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        stu_id,
+      </if>
+      <if test="orgCode != null" >
+        org_code,
+      </if>
+      <if test="stuName != null" >
+        stu_name,
+      </if>
+      <if test="stuIdcaed != null" >
+        stu_idcaed,
+      </if>
+      <if test="stuCode != null" >
+        stu_code,
+      </if>
+      <if test="stuTempCode != null" >
+        stu_temp_code,
+      </if>
+      <if test="stuSex != null" >
+        stu_sex,
+      </if>
+      <if test="stuNation != null" >
+        stu_nation,
+      </if>
+      <if test="stuProvince != null" >
+        stu_province,
+      </if>
+      <if test="stuAddress != null" >
+        stu_address,
+      </if>
+      <if test="stuGrade != null" >
+        stu_grade,
+      </if>
+      <if test="stuType != null" >
+        stu_type,
+      </if>
+      <if test="stuStatus != null" >
+        stu_status,
+      </if>
+      <if test="stuStatusType != null" >
+        stu_status_type,
+      </if>
+      <if test="stuEmail != null" >
+        stu_email,
+      </if>
+      <if test="stuPyname != null" >
+        stu_pyname,
+      </if>
+      <if test="stuBirthday != null" >
+        stu_birthday,
+      </if>
+      <if test="tuid != null" >
+        tuid,
+      </if>
+      <if test="tudate != null" >
+        tudate,
+      </if>
+      <if test="xuid != null" >
+        xuid,
+      </if>
+      <if test="xudate != null" >
+        xudate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        #{stuId,jdbcType=INTEGER},
+      </if>
+      <if test="orgCode != null" >
+        #{orgCode,jdbcType=INTEGER},
+      </if>
+      <if test="stuName != null" >
+        #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuIdcaed != null" >
+        #{stuIdcaed,jdbcType=VARCHAR},
+      </if>
+      <if test="stuCode != null" >
+        #{stuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stuTempCode != null" >
+        #{stuTempCode,jdbcType=INTEGER},
+      </if>
+      <if test="stuSex != null" >
+        #{stuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNation != null" >
+        #{stuNation,jdbcType=VARCHAR},
+      </if>
+      <if test="stuProvince != null" >
+        #{stuProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="stuAddress != null" >
+        #{stuAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="stuGrade != null" >
+        #{stuGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="stuType != null" >
+        #{stuType,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatus != null" >
+        #{stuStatus,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatusType != null" >
+        #{stuStatusType,jdbcType=VARCHAR},
+      </if>
+      <if test="stuEmail != null" >
+        #{stuEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPyname != null" >
+        #{stuPyname,jdbcType=VARCHAR},
+      </if>
+      <if test="stuBirthday != null" >
+        #{stuBirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="tuid != null" >
+        #{tuid,jdbcType=VARCHAR},
+      </if>
+      <if test="tudate != null" >
+        #{tudate,jdbcType=VARCHAR},
+      </if>
+      <if test="xuid != null" >
+        #{xuid,jdbcType=VARCHAR},
+      </if>
+      <if test="xudate != null" >
+        #{xudate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 修改学籍  editBasStu -->
+  <update id="editBasStu" parameterType="com.Hong.ssm.bean.BasStu" >
+    update bas_stu
+    <set >
+      <if test="stuName != null" >
+        stu_name = #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuIdcaed != null" >
+        stu_idcaed = #{stuIdcaed,jdbcType=VARCHAR},
+      </if>
+      <if test="stuCode != null" >
+        stu_code = #{stuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stuTempCode != null" >
+        stu_temp_code = #{stuTempCode,jdbcType=INTEGER},
+      </if>
+      <if test="stuSex != null" >
+        stu_sex = #{stuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNation != null" >
+        stu_nation = #{stuNation,jdbcType=VARCHAR},
+      </if>
+      <if test="stuProvince != null" >
+        stu_province = #{stuProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="stuAddress != null" >
+        stu_address = #{stuAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="stuType != null" >
+        stu_type = #{stuType,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatus != null" >
+        stu_status = #{stuStatus,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatusType != null" >
+        stu_status_type = #{stuStatusType,jdbcType=VARCHAR},
+      </if>
+      <if test="stuEmail != null" >
+        stu_email = #{stuEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPyname != null" >
+        stu_pyname = #{stuPyname,jdbcType=VARCHAR},
+      </if>
+      <if test="stuBirthday != null" >
+        stu_birthday = #{stuBirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="tuid != null" >
+        tuid = #{tuid,jdbcType=VARCHAR},
+      </if>
+      <if test="tudate != null" >
+        tudate = #{tudate,jdbcType=VARCHAR},
+      </if>
+      <if test="xuid != null" >
+        xuid = #{xuid,jdbcType=VARCHAR},
+      </if>
+      <if test="xudate != null" >
+        xudate = #{xudate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where stu_id = #{stuId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.BasStuExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from bas_stu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from bas_stu
+    where stu_id = #{stuId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from bas_stu
+    where stu_id = #{stuId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.Hong.ssm.bean.BasStuExample" >
+    delete from bas_stu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.Hong.ssm.bean.BasStu" >
+    insert into bas_stu (stu_id, org_code, stu_name, 
+      stu_idcaed, stu_code, stu_temp_code, 
+      stu_sex, stu_nation, stu_province, 
+      stu_address, stu_grade, stu_type, 
+      stu_status, stu_status_type, stu_email, 
+      stu_pyname, stu_birthday, tuid, 
+      tudate, xuid, xudate
+      )
+    values (#{stuId,jdbcType=INTEGER}, #{orgCode,jdbcType=INTEGER}, #{stuName,jdbcType=VARCHAR}, 
+      #{stuIdcaed,jdbcType=VARCHAR}, #{stuCode,jdbcType=VARCHAR}, #{stuTempCode,jdbcType=INTEGER}, 
+      #{stuSex,jdbcType=VARCHAR}, #{stuNation,jdbcType=VARCHAR}, #{stuProvince,jdbcType=VARCHAR}, 
+      #{stuAddress,jdbcType=VARCHAR}, #{stuGrade,jdbcType=VARCHAR}, #{stuType,jdbcType=INTEGER}, 
+      #{stuStatus,jdbcType=INTEGER}, #{stuStatusType,jdbcType=VARCHAR}, #{stuEmail,jdbcType=VARCHAR}, 
+      #{stuPyname,jdbcType=VARCHAR}, #{stuBirthday,jdbcType=VARCHAR}, #{tuid,jdbcType=VARCHAR}, 
+      #{tudate,jdbcType=VARCHAR}, #{xuid,jdbcType=VARCHAR}, #{xudate,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.Hong.ssm.bean.BasStu" >
+    insert into bas_stu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        stu_id,
+      </if>
+      <if test="orgCode != null" >
+        org_code,
+      </if>
+      <if test="stuName != null" >
+        stu_name,
+      </if>
+      <if test="stuIdcaed != null" >
+        stu_idcaed,
+      </if>
+      <if test="stuCode != null" >
+        stu_code,
+      </if>
+      <if test="stuTempCode != null" >
+        stu_temp_code,
+      </if>
+      <if test="stuSex != null" >
+        stu_sex,
+      </if>
+      <if test="stuNation != null" >
+        stu_nation,
+      </if>
+      <if test="stuProvince != null" >
+        stu_province,
+      </if>
+      <if test="stuAddress != null" >
+        stu_address,
+      </if>
+      <if test="stuGrade != null" >
+        stu_grade,
+      </if>
+      <if test="stuType != null" >
+        stu_type,
+      </if>
+      <if test="stuStatus != null" >
+        stu_status,
+      </if>
+      <if test="stuStatusType != null" >
+        stu_status_type,
+      </if>
+      <if test="stuEmail != null" >
+        stu_email,
+      </if>
+      <if test="stuPyname != null" >
+        stu_pyname,
+      </if>
+      <if test="stuBirthday != null" >
+        stu_birthday,
+      </if>
+      <if test="tuid != null" >
+        tuid,
+      </if>
+      <if test="tudate != null" >
+        tudate,
+      </if>
+      <if test="xuid != null" >
+        xuid,
+      </if>
+      <if test="xudate != null" >
+        xudate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        #{stuId,jdbcType=INTEGER},
+      </if>
+      <if test="orgCode != null" >
+        #{orgCode,jdbcType=INTEGER},
+      </if>
+      <if test="stuName != null" >
+        #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuIdcaed != null" >
+        #{stuIdcaed,jdbcType=VARCHAR},
+      </if>
+      <if test="stuCode != null" >
+        #{stuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stuTempCode != null" >
+        #{stuTempCode,jdbcType=INTEGER},
+      </if>
+      <if test="stuSex != null" >
+        #{stuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNation != null" >
+        #{stuNation,jdbcType=VARCHAR},
+      </if>
+      <if test="stuProvince != null" >
+        #{stuProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="stuAddress != null" >
+        #{stuAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="stuGrade != null" >
+        #{stuGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="stuType != null" >
+        #{stuType,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatus != null" >
+        #{stuStatus,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatusType != null" >
+        #{stuStatusType,jdbcType=VARCHAR},
+      </if>
+      <if test="stuEmail != null" >
+        #{stuEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPyname != null" >
+        #{stuPyname,jdbcType=VARCHAR},
+      </if>
+      <if test="stuBirthday != null" >
+        #{stuBirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="tuid != null" >
+        #{tuid,jdbcType=VARCHAR},
+      </if>
+      <if test="tudate != null" >
+        #{tudate,jdbcType=VARCHAR},
+      </if>
+      <if test="xuid != null" >
+        #{xuid,jdbcType=VARCHAR},
+      </if>
+      <if test="xudate != null" >
+        #{xudate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.Hong.ssm.bean.BasStuExample" resultType="java.lang.Integer" >
+    select count(*) from bas_stu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update bas_stu
+    <set >
+      <if test="record.stuId != null" >
+        stu_id = #{record.stuId,jdbcType=INTEGER},
+      </if>
+      <if test="record.orgCode != null" >
+        org_code = #{record.orgCode,jdbcType=INTEGER},
+      </if>
+      <if test="record.stuName != null" >
+        stu_name = #{record.stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuIdcaed != null" >
+        stu_idcaed = #{record.stuIdcaed,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuCode != null" >
+        stu_code = #{record.stuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuTempCode != null" >
+        stu_temp_code = #{record.stuTempCode,jdbcType=INTEGER},
+      </if>
+      <if test="record.stuSex != null" >
+        stu_sex = #{record.stuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuNation != null" >
+        stu_nation = #{record.stuNation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuProvince != null" >
+        stu_province = #{record.stuProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuAddress != null" >
+        stu_address = #{record.stuAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuGrade != null" >
+        stu_grade = #{record.stuGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuType != null" >
+        stu_type = #{record.stuType,jdbcType=INTEGER},
+      </if>
+      <if test="record.stuStatus != null" >
+        stu_status = #{record.stuStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.stuStatusType != null" >
+        stu_status_type = #{record.stuStatusType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuEmail != null" >
+        stu_email = #{record.stuEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuPyname != null" >
+        stu_pyname = #{record.stuPyname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stuBirthday != null" >
+        stu_birthday = #{record.stuBirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tuid != null" >
+        tuid = #{record.tuid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tudate != null" >
+        tudate = #{record.tudate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xuid != null" >
+        xuid = #{record.xuid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xudate != null" >
+        xudate = #{record.xudate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update bas_stu
+    set stu_id = #{record.stuId,jdbcType=INTEGER},
+      org_code = #{record.orgCode,jdbcType=INTEGER},
+      stu_name = #{record.stuName,jdbcType=VARCHAR},
+      stu_idcaed = #{record.stuIdcaed,jdbcType=VARCHAR},
+      stu_code = #{record.stuCode,jdbcType=VARCHAR},
+      stu_temp_code = #{record.stuTempCode,jdbcType=INTEGER},
+      stu_sex = #{record.stuSex,jdbcType=VARCHAR},
+      stu_nation = #{record.stuNation,jdbcType=VARCHAR},
+      stu_province = #{record.stuProvince,jdbcType=VARCHAR},
+      stu_address = #{record.stuAddress,jdbcType=VARCHAR},
+      stu_grade = #{record.stuGrade,jdbcType=VARCHAR},
+      stu_type = #{record.stuType,jdbcType=INTEGER},
+      stu_status = #{record.stuStatus,jdbcType=INTEGER},
+      stu_status_type = #{record.stuStatusType,jdbcType=VARCHAR},
+      stu_email = #{record.stuEmail,jdbcType=VARCHAR},
+      stu_pyname = #{record.stuPyname,jdbcType=VARCHAR},
+      stu_birthday = #{record.stuBirthday,jdbcType=VARCHAR},
+      tuid = #{record.tuid,jdbcType=VARCHAR},
+      tudate = #{record.tudate,jdbcType=VARCHAR},
+      xuid = #{record.xuid,jdbcType=VARCHAR},
+      xudate = #{record.xudate,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.Hong.ssm.bean.BasStu" >
+    update bas_stu
+    <set >
+      <if test="orgCode != null" >
+        org_code = #{orgCode,jdbcType=INTEGER},
+      </if>
+      <if test="stuName != null" >
+        stu_name = #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuIdcaed != null" >
+        stu_idcaed = #{stuIdcaed,jdbcType=VARCHAR},
+      </if>
+      <if test="stuCode != null" >
+        stu_code = #{stuCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stuTempCode != null" >
+        stu_temp_code = #{stuTempCode,jdbcType=INTEGER},
+      </if>
+      <if test="stuSex != null" >
+        stu_sex = #{stuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNation != null" >
+        stu_nation = #{stuNation,jdbcType=VARCHAR},
+      </if>
+      <if test="stuProvince != null" >
+        stu_province = #{stuProvince,jdbcType=VARCHAR},
+      </if>
+      <if test="stuAddress != null" >
+        stu_address = #{stuAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="stuGrade != null" >
+        stu_grade = #{stuGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="stuType != null" >
+        stu_type = #{stuType,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatus != null" >
+        stu_status = #{stuStatus,jdbcType=INTEGER},
+      </if>
+      <if test="stuStatusType != null" >
+        stu_status_type = #{stuStatusType,jdbcType=VARCHAR},
+      </if>
+      <if test="stuEmail != null" >
+        stu_email = #{stuEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPyname != null" >
+        stu_pyname = #{stuPyname,jdbcType=VARCHAR},
+      </if>
+      <if test="stuBirthday != null" >
+        stu_birthday = #{stuBirthday,jdbcType=VARCHAR},
+      </if>
+      <if test="tuid != null" >
+        tuid = #{tuid,jdbcType=VARCHAR},
+      </if>
+      <if test="tudate != null" >
+        tudate = #{tudate,jdbcType=VARCHAR},
+      </if>
+      <if test="xuid != null" >
+        xuid = #{xuid,jdbcType=VARCHAR},
+      </if>
+      <if test="xudate != null" >
+        xudate = #{xudate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where stu_id = #{stuId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.Hong.ssm.bean.BasStu" >
+    update bas_stu
+    set org_code = #{orgCode,jdbcType=INTEGER},
+      stu_name = #{stuName,jdbcType=VARCHAR},
+      stu_idcaed = #{stuIdcaed,jdbcType=VARCHAR},
+      stu_code = #{stuCode,jdbcType=VARCHAR},
+      stu_temp_code = #{stuTempCode,jdbcType=INTEGER},
+      stu_sex = #{stuSex,jdbcType=VARCHAR},
+      stu_nation = #{stuNation,jdbcType=VARCHAR},
+      stu_province = #{stuProvince,jdbcType=VARCHAR},
+      stu_address = #{stuAddress,jdbcType=VARCHAR},
+      stu_grade = #{stuGrade,jdbcType=VARCHAR},
+      stu_type = #{stuType,jdbcType=INTEGER},
+      stu_status = #{stuStatus,jdbcType=INTEGER},
+      stu_status_type = #{stuStatusType,jdbcType=VARCHAR},
+      stu_email = #{stuEmail,jdbcType=VARCHAR},
+      stu_pyname = #{stuPyname,jdbcType=VARCHAR},
+      stu_birthday = #{stuBirthday,jdbcType=VARCHAR},
+      tuid = #{tuid,jdbcType=VARCHAR},
+      tudate = #{tudate,jdbcType=VARCHAR},
+      xuid = #{xuid,jdbcType=VARCHAR},
+      xudate = #{xudate,jdbcType=VARCHAR}
+    where stu_id = #{stuId,jdbcType=INTEGER}
+  </update>
+</mapper>

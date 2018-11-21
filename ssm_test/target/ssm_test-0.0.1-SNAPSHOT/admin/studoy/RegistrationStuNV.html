@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>骝马新跨白玉鞍.战罢沙场月色寒</title>
+<link href="../../js/layui/css/layui.css" rel="stylesheet" type="text/css" />
+<link href="../../css/reset.css" rel="stylesheet" type="text/css" />
+<link href="../../js/jqGrid/css/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+<link href="../../js/jqGrid/jqueryui/jquery-ui.css" rel="stylesheet" type="text/css"  />
+<link href="../../css/jwstyle.css?v=10" rel="stylesheet" type="text/css"  />
+<link href="../../css/index.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../js/jquery-1.9.0.min.js"></script>
+<script type="text/javascript" src="../../js/jqGrid/js/jquery.jqGrid.js"></script>
+<script type="text/javascript" src="../../js/jqGrid/js/i18n/grid.locale-cn.js"></script>
+<script type="text/javascript" src="../../js/mainset.js?v=20180301"></script>
+<script type="text/javascript" src="../../js/ligerui/js/ligerui.all.js"></script>
+<script type="text/javascript" src="../../js/layer/layer.js"></script>
+<script type="text/javascript">
+	function pageInit(){
+			var gridInit = {
+				url:'selRegistrationStulistNV.action',
+				colNames:['入住日期','宿舍楼','房间','姓名','入住状态','性别','联系电话','操作'],
+				colModel:[{
+					name : 'registrationDate',
+					width : 120,
+					align: "center"
+				}, 
+				{
+					name : 'registrationDoyName',
+					width : 120,
+					align: "center"
+				}, 
+				{
+					name : 'registrationRoom',
+					width : 120,
+					align: "center"
+				},
+				{
+					name : 'registrationStuName',
+					width : 120,
+					align: "center"
+				},
+				{
+					name : 'registrationPid',
+					width : 100,
+					align: "center",
+					formatter: function(cellvalue, options, rowObject,d){
+							
+					 		if(cellvalue==0){
+					 			return '<a class="status" href="javascript:void(0);" title="入住正常" s-status="'+cellvalue+'" s-id="'+rowObject.registrationId+'"><span class="layui-badge layui-bg-blue" style="cursor:pointer" >入住正常</span></a>';
+					 		}else{
+					 			//return '<span class="layui-badge" style="cursor:pointer">已禁用</span>';
+					 			return '<a class="status" href="javascript:void(0);" title="已退宿" s-status="'+cellvalue+'" s-id="'+rowObject.registrationId+'"><span class="layui-badge" style="cursor:pointer">已退宿</span></a>';
+					 		}
+						}
+				},  
+				{
+					name : 'registrationStuSex',
+					width : 120,
+					align: "center"
+				},
+				{
+					name : 'registrationPhone',
+					width : 120,
+					align: "center"
+				},
+				{
+					name : 'registrationId',
+					key : true,
+					width : 120,
+					align: "center",
+					formatter: function(cellvalue, options, rowObject){
+						var html_con = '<a class="gride" href="javascript:void(0);"  title="修改" e-id="'+cellvalue+'"><span class="layui-badge layui-bg-blue" style="cursor:pointer" >换寝</span></a><a class="gridd" href="javascript:void(0);" title="删除" d-id="'+cellvalue+'"  ><i class="layui-icon">&#xe640;</i></a>';
+						return html_con;
+						}
+				}],
+				height : MainSet.setGridSize().h,
+				jsonReader : {
+					id : "registrationId",
+				 	total : "data.totalPages",//总页数
+					page : "data.pageNo",//页码
+					records : "data.totalRecords",//查询出的记录数 */
+					root : "data.list"//数据			  			
+				}
+			
+			};
+		//创建jqGrid组件
+		thisGrid = jQuery("#userTable").jqGrid(MainSet.CreateGridInit(gridInit));
+		
+		//修改
+		$("#userTable").on("click",".gride",function(event){
+			event.preventDefault();
+			eid=$(this).attr("e-id");
+			layer.open({
+				  id:'editUser_dlg',
+				  title:'修改用户信息',
+				  anim: 1,
+				  type: 2,
+				  offset: '80px',
+				  area: ['650px', '400px'],
+				  fixed: false, //不固定
+				  maxmin: false,
+				  content:['RegistrationStu_editDoy2.jsp', 'no'],
+				  btn: ['保存', '关闭'],
+				  yes: function(index, layero){
+					    var iframeWin = window[layero.find('iframe')[0]['name']];
+					    iframeWin.doeditRegistrationStuDoy(index);
+		            }
+				}); 
+		});
+		 //更改用户状态
+		$("#userTable").on("click",".status",function(event){
+			event.preventDefault();
+			status = $(this).attr("s-status");
+			sid = $(this).attr("s-id");
+			var postData={registrationId:sid,registrationPid:status}
+			$.ajax({
+				type:"post",
+				url:"editRegistrationStuPid.action",
+				data:postData,
+				dataType:"json",
+				success: function(rd){
+					 if(rd.succ){
+						 MainSet.msg(rd.msg);
+						$("#gridrld").click();
+					 }else{
+						 layer.msg(rd.msg); 
+					 } 
+				  }
+			})
+		}); 
+		 
+		//删除
+		$("#userTable").on("click",".gridd",function(event){
+			event.preventDefault();
+			var did =$(this).attr("d-id");
+			layer.confirm('确定删除学生吗?', {icon: 3, title:'系统提示'}, function(index){
+				  var postData={registrationId:did};
+				  $.ajax({
+					  type: "post",
+					  url: "delRegistrationStu.action",
+					  data:postData,
+					  dataType: "json",
+					  success: function(rd){
+						 if(rd.succ){
+							 MainSet.msg(rd.msg);
+							$("#gridrld").click();
+						 }else{
+							 layer.msg(rd.msg); 
+						 } 
+					  }
+				});
+				  layer.close(index);
+			});
+		}); 
+		
+		thisGrid.jqGrid('bindKeys');
+	}
+	
+	//新增
+	function  addUser(){
+		$("#adduser").on("click",function(event){
+			event.preventDefault();
+			layer.open({
+				  id:'addstudoy_dlg',
+				  title:'新增宿舍楼',
+				  anim: 1,
+				  type: 2,
+				  offset: '80px',
+				  area: ['480px', '500px'],
+				  fixed: false, //不固定
+				  maxmin: false,
+				  content:['RegistrationStu_add2.jsp', 'no'],
+				  btn: ['保存', '关闭'],
+				  yes: function(index, layero){
+					    var iframeWin = window[layero.find('iframe')[0]['name']];
+					    iframeWin.doAddRegistrationStu(index);
+		            }
+				}); 
+		});
+		
+	}
+	
+	 
+	
+	function resizeSize() {
+		$(window).resize(function() {
+			thisGrid.jqGrid('setGridHeight', MainSet.setGridSize().h);
+			thisGrid.jqGrid('setGridWidth', MainSet.setGridSize().w);
+		});
+	}
+	//刷新按钮
+	function gridReload(){
+		$("#gridrld").on("click",function(){thisGrid.trigger("reloadGrid");});
+	 }
+	
+	//查询
+	function sel_user(){
+		$("#search").on("click",function(){
+			 var registrationStuName = $("#registrationStuName").val();
+			 thisGrid.setGridParam({
+				 postData:{'registrationStuName':registrationStuName},
+				 page:1
+			 });
+			thisGrid.trigger("reloadGrid"); 
+		}); 
+	 }
+
+	$(function() {
+		pageInit();
+		addUser();
+		sel_user();
+		resizeSize();
+		gridReload();
+		//enterKey('.jwseaech','search');
+	})
+</script>
+
+</head>
+<body style="background-color: #f9f9f9;">
+ <div style="margin-left: 10px;margin-right: 5px;">
+	<div  style="height: 60px; line-height: 50px; width: 100%;">
+		  <div  class="fl">
+		    <span class="layui-input-inline">
+		      <input type="text" name="registrationStuName" id="registrationStuName"    placeholder="输入姓名搜索"  class="jw-input w-180 jwseaech">
+			</span>
+		    <button class="layui-btn layui-btn-sm ml-20" id="search">
+			 	 <i class="layui-icon">&#xe615;</i> 搜索
+			</button>
+		  </div>
+		 <div  class="fr mr-20">
+	    	  <button id="adduser" class="layui-btn layui-btn-warm layui-btn-sm">
+	    	  	<i class="layui-icon">&#xe608;</i> 学生入住
+	    	  </button>
+	    	   <button class="layui-btn layui-btn-primary layui-btn-sm" id="gridrld">
+	    	  	<i class="layui-icon">&#x1002;</i> 刷新
+	    	  </button>
+		</div>
+	</div>	 			
+ 	<div id="tableDiv" style="display: block;">
+ 		<table id="userTable"></table> 
+		<div id="jqGridPager" ></div>		
+ 	</div>
+ </div>
+</body>
+</html>

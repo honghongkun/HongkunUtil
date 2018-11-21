@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>骝马新跨白玉鞍.战罢沙场月色寒</title>
+<link href="../../js/layui/css/layui.css" rel="stylesheet" type="text/css" />
+<link href="../../css/reset.css" rel="stylesheet" type="text/css" />
+<link href="../../js/jqGrid/css/ui.jqgrid.css" rel="stylesheet" type="text/css" />
+<link href="../../js/jqGrid/jqueryui/jquery-ui.css" rel="stylesheet" type="text/css"  />
+<link href="../../css/jwstyle.css?v=10" rel="stylesheet" type="text/css"  />
+<link href="../../css/index.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../js/jquery-1.9.0.min.js"></script>
+<script type="text/javascript" src="../../js/jqGrid/js/jquery.jqGrid.js"></script>
+<script type="text/javascript" src="../../js/jqGrid/js/i18n/grid.locale-cn.js"></script>
+<script type="text/javascript" src="../../js/mainset.js?v=20180301"></script>
+<script type="text/javascript" src="../../js/ligerui/js/ligerui.all.js"></script>
+<script type="text/javascript" src="../../js/layer/layer.js"></script>
+<script type="text/javascript">
+	function pageInit(){
+			var gridInit = {
+				url:'selBasOrglist.action',
+				colNames:['院系','专业', '编码', '状态' ,'删除标识','经办人','备注','操作'],
+				colModel:[{
+					name : 'orgDepartment',
+					width : 80
+				}, 
+				{
+					name : 'orgLevel',
+					width : 80
+				}, 
+				{
+					name : 'orgCodebystu',
+					width : 80
+				},                                    
+				{
+					name : 'orgStatus',
+					width : 80,
+					align: "center",
+					formatter: function(cellvalue, options, rowObject,d){
+							
+					 		if(cellvalue==0){
+					 			return '<a class="status" href="javascript:void(0);" title="正常" s-status="'+cellvalue+'" s-id="'+rowObject.orgId+'"><span class="layui-badge layui-bg-blue" style="cursor:pointer" >正常</span></a>';
+					 		}else{
+					 			//return '<span class="layui-badge" style="cursor:pointer">已禁用</span>';
+					 			return '<a class="status" href="javascript:void(0);" title="已禁用" s-status="'+cellvalue+'" s-id="'+rowObject.orgId+'"><span class="layui-badge" style="cursor:pointer">已禁用</span></a>';
+					 		}
+						}
+					
+				},
+				{
+					name : 'delflag',
+					width : 80,
+					align: "center",
+					formatter: function(cellvalue, options, rowObject,d){
+							
+					 		if(cellvalue==0){
+					 			return '<a class="fstatus" href="javascript:void(0);" title="正常" f-status="'+cellvalue+'" f-id="'+rowObject.orgId+'"><span class="layui-badge layui-bg-blue" style="cursor:pointer" >正常</span></a>';
+					 		}else{
+					 			//return '<span class="layui-badge" style="cursor:pointer">已禁用</span>';
+					 			return '<a class="fstatus" href="javascript:void(0);" title="已删除" f-status="'+cellvalue+'" f-id="'+rowObject.orgId+'"><span class="layui-badge" style="cursor:pointer">已删除</span></a>';
+					 		}
+						}
+				},  
+				{
+					name : 'orgId',
+					width : 50,
+					align: "center",
+					formatter: function(cellvalue, options, rowObject){
+						return '<a class="jrids" href="javascript:void(0);"  title="经办人"   j-id="'+cellvalue+'" ><i class="layui-icon">&#xe612;</i></a>';
+					}
+				}, 
+				{
+					name : 'orgInfo',
+					width : 80
+				},   
+				{
+					name : 'orgId',
+					key : true,
+					width : 80,
+					align: "center",
+					formatter: function(cellvalue, options, rowObject){
+						var html_con = '<a class="gride" href="javascript:void(0);"  title="修改" e-id="'+cellvalue+'"><i class="layui-icon">&#xe642;</i></a><a class="gridd" href="javascript:void(0);" title="删除" d-id="'+cellvalue+'"  ><i class="layui-icon">&#xe640;</i></a>';
+						return html_con;
+						}
+				}],
+				height : MainSet.setGridSize().h,
+				jsonReader : {
+					id : "orgId",
+				 	total : "data.totalPages",//总页数
+					page : "data.pageNo",//页码
+					records : "data.totalRecords",//查询出的记录数 */
+					root : "data.list"//数据			  			
+				}
+			
+			};
+		//创建jqGrid组件
+		thisGrid = jQuery("#userTable").jqGrid(MainSet.CreateGridInit(gridInit));
+		
+		//修改结构
+		$("#userTable").on("click",".gride",function(event){
+			event.preventDefault();
+			eid=$(this).attr("e-id");
+			layer.open({
+				  id:'editUser_dlg',
+				  title:'修改结构信息',
+				  anim: 1,
+				  type: 2,
+				  offset: '80px',
+				  area: ['480px', '450px'],
+				  fixed: false, //不固定
+				  maxmin: false,
+				  content:['basorg_edit.jsp', 'no'],
+				  btn: ['保存', '关闭'],
+				  yes: function(index, layero){
+					    var iframeWin = window[layero.find('iframe')[0]['name']];
+					    iframeWin.doEditBasOrg(index);
+		            }
+				}); 
+		});
+		 //更改用户状态
+		$("#userTable").on("click",".status",function(event){
+			event.preventDefault();
+			status = $(this).attr("s-status");
+			sid = $(this).attr("s-id");
+			var postData={orgId:sid,orgStatus:status}
+			$.ajax({
+				type:"post",
+				url:"BasOrdeditStatus.action",
+				data:postData,
+				dataType:"json",
+				success: function(rd){
+					 if(rd.succ){
+						 MainSet.msg(rd.msg);
+						$("#gridrld").click();
+					 }else{
+						 layer.msg(rd.msg); 
+					 } 
+				  }
+			})
+		}); 
+		//删除结构
+		$("#userTable").on("click",".gridd",function(event){
+			event.preventDefault();
+			var did =$(this).attr("d-id");
+			layer.confirm('确定要删除该结构吗?', {icon: 3, title:'系统提示'}, function(index){
+				  var postData={orgId:did};
+				  $.ajax({
+					  type: "post",
+					  url: "delBasOrgID.action",
+					  data:postData,
+					  dataType: "json",
+					  success: function(rd){
+						 if(rd.succ){
+							 MainSet.msg(rd.msg);
+							$("#gridrld").click();
+						 }else{
+							 layer.msg(rd.msg); 
+						 } 
+					  }
+				});
+				  layer.close(index);
+			});
+		}); 
+		
+		thisGrid.jqGrid('bindKeys');
+		
+		
+		/* 经办人查询 */
+		$("#userTable").on("click",".jrids",function(event){
+			event.preventDefault();
+			jid =$(this).attr("j-id");
+			
+			layer.open({
+				  id:'setUser_dlg',
+				  title:'经办人',
+				  anim: 1,
+				  type: 2,
+				  offset: '80px',
+				  area: ['460px', '250px'],
+				  shade: [0.3, '#393D49'],
+				  shadeClose:false,
+				  fixed: false, //不固定
+				  maxmin: false,
+				  content:['Orgtuid_tudate.jsp', 'no']
+				
+				
+				}); 
+		});
+	}
+	
+	//新增
+	function  addUser(){
+		$("#adduser").on("click",function(event){
+			event.preventDefault();
+			layer.open({
+				  id:'adduser_dlg',
+				  title:'新增结构',
+				  anim: 1,
+				  type: 2,
+				  offset: '80px',
+				  area: ['480px', '450px'],
+				  fixed: false, //不固定
+				  maxmin: false,
+				  content:['basorg_add.jsp', 'no'],
+				  btn: ['保存', '关闭'],
+				  yes: function(index, layero){
+					    var iframeWin = window[layero.find('iframe')[0]['name']];
+					    iframeWin.doAddBasOrg(index);
+		            }
+				}); 
+		});
+		
+	}
+	
+	 
+	
+	function resizeSize() {
+		$(window).resize(function() {
+			thisGrid.jqGrid('setGridHeight', MainSet.setGridSize().h);
+			thisGrid.jqGrid('setGridWidth', MainSet.setGridSize().w);
+		});
+	}
+	//刷新按钮
+	function gridReload(){
+		$("#gridrld").on("click",function(){thisGrid.trigger("reloadGrid");});
+	 }
+	
+	//查询
+	function sel_user(){
+		$("#search").on("click",function(){
+			 var orgDepartment = $("#orgDepartment").val();
+			 thisGrid.setGridParam({
+				 postData:{'orgDepartment':orgDepartment},
+				 page:1
+			 });
+			thisGrid.trigger("reloadGrid"); 
+		}); 
+	 }
+
+	$(function() {
+		pageInit();
+		addUser();
+		sel_user();
+		resizeSize();
+		gridReload();
+		//enterKey('.jwseaech','search');
+	})
+</script>
+
+</head>
+<body style="background-color: #f9f9f9;">
+ <div style="margin-left: 10px;margin-right: 5px;">
+	<div  style="height: 60px; line-height: 50px; width: 100%;">
+		  <div  class="fl">
+		    <span class="layui-input-inline">
+		      <input type="text" name="orgDepartment" id="orgDepartment"    placeholder="输入名称搜索"  class="jw-input w-180 jwseaech">
+			</span>
+		    <button class="layui-btn layui-btn-sm ml-20" id="search">
+			 	 <i class="layui-icon">&#xe615;</i> 搜索
+			</button>
+		  </div>
+		 <div  class="fr mr-20">
+	    	  <button id="adduser" class="layui-btn layui-btn-warm layui-btn-sm">
+	    	  	<i class="layui-icon">&#xe608;</i> 新增结构
+	    	  </button>
+	    	   <button class="layui-btn layui-btn-primary layui-btn-sm" id="gridrld">
+	    	  	<i class="layui-icon">&#x1002;</i> 刷新
+	    	  </button>
+		</div>
+	</div>	 			
+ 	<div id="tableDiv" style="display: block;">
+ 		<table id="userTable"></table> 
+		<div id="jqGridPager" ></div>		
+ 	</div>
+ </div>
+</body>
+</html>

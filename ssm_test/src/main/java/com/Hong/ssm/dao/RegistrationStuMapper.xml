@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Hong.ssm.dao.RegistrationStuMapper" >
+  <resultMap id="BaseResultMap" type="com.Hong.ssm.bean.RegistrationStu" >
+    <id column="registration_id" property="registrationId" jdbcType="INTEGER" />
+    <result column="registration_pid" property="registrationPid" jdbcType="INTEGER" />
+    <result column="registration_stu_name" property="registrationStuName" jdbcType="VARCHAR" />
+    <result column="registration_stu_sex" property="registrationStuSex" jdbcType="VARCHAR" />
+    <result column="registration_doy_name" property="registrationDoyName" jdbcType="VARCHAR" />
+    <result column="registration_room" property="registrationRoom" jdbcType="VARCHAR" />
+    <result column="registration_phone" property="registrationPhone" jdbcType="VARCHAR" />
+    <result column="registration_date" property="registrationDate" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="registrationStuExtResultMap"  type="com.Hong.ssm.bean.RegistrationStuExt" extends="BaseResultMap">
+  <!-- 	<association property="basStu" javaType="com.Hong.ssm.bean.BasStu">
+  		  <id column="stu_id" property="stuId" />
+          <result column="stu_name" property="stuName" />
+  	</association> -->
+  	<association property="stuDoy" javaType="com.Hong.ssm.bean.StuDoy">
+  		  <id column="doy_id" property="doyId" />
+          <result column="doy_name" property="doyName" />
+  	</association>
+  </resultMap>
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    registration_id, registration_pid, registration_stu_name, registration_stu_sex, registration_doy_name, 
+    registration_room, registration_phone, registration_date
+  </sql>
+  <sql id="Base_Column_List_ext" >
+    registration_id, registration_pid, registration_stu_name, registration_stu_sex, registration_doy_name, 
+    registration_room, registration_phone, registration_date, doy_name
+  </sql>
+ <!--  查询入住列表 男-->
+  <select id="selRegistrationStulist" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    select 
+    <include refid="Base_Column_List" />
+    from registration_stu
+     <where>
+     and registration_stu_sex='男'
+     <if test="registrationStuName!=null">
+    	  and (registration_stu_name like CONCAT('%',#{registrationStuName},'%')
+    	    )
+    	</if>
+     </where>
+  </select>
+  
+  <!--  查询入住列表女 -->
+  <select id="selRegistrationStulistNV" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    select 
+    <include refid="Base_Column_List" />
+    from registration_stu
+     <where>
+     and registration_stu_sex='女'
+     <if test="registrationStuName!=null">
+    	  and (registration_stu_name like CONCAT('%',#{registrationStuName},'%')
+    	    )
+    	</if>
+     </where>
+  </select>
+   <!-- 退宿0改为1 -->
+   <update id="editRegistrationStuPid" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    update registration_stu
+    set registration_pid = #{registrationPid,jdbcType=INTEGER}
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </update>
+    <!--  查询ID -->
+   <select id="selRegistrationStuByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from registration_stu
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </select>
+     <!-- 删除 -->
+   <delete id="delRegistrationStu" parameterType="int" >
+    delete from registration_stu
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </delete>
+  
+  <update id="editRegistrationStu" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    update registration_stu
+    <set >
+      <if test="registrationStuName != null" >
+        registration_stu_name = #{registrationStuName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationDoyName != null" >
+        registration_doy_name = #{registrationDoyName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationRoom != null" >
+        registration_room = #{registrationRoom,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </update>
+  
+      <!-- 添加入住 -->
+  <insert id="addRegistrationStu" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    insert into registration_stu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="registrationId != null" >
+        registration_id,
+      </if>
+      <if test="registrationPid != null" >
+        registration_pid,
+      </if>
+      <if test="registrationStuName != null" >
+        registration_stu_name,
+      </if>
+      <if test="registrationStuSex != null" >
+        registration_stu_sex,
+      </if>
+      <if test="registrationDoyName != null" >
+        registration_doy_name,
+      </if>
+      <if test="registrationRoom != null" >
+        registration_room,
+      </if>
+      <if test="registrationPhone != null" >
+        registration_phone,
+      </if>
+      <if test="registrationDate != null" >
+        registration_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="registrationId != null" >
+        #{registrationId,jdbcType=INTEGER},
+      </if>
+      <if test="registrationPid != null" >
+        #{registrationPid,jdbcType=INTEGER},
+      </if>
+      <if test="registrationStuName != null" >
+        #{registrationStuName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationStuSex != null" >
+        #{registrationStuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationDoyName != null" >
+        #{registrationDoyName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationRoom != null" >
+        #{registrationRoom,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationPhone != null" >
+        #{registrationPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationDate != null" >
+        #{registrationDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.RegistrationStuExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from registration_stu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from registration_stu
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from registration_stu
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.Hong.ssm.bean.RegistrationStuExample" >
+    delete from registration_stu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    insert into registration_stu (registration_id, registration_pid, 
+      registration_stu_name, registration_stu_sex, 
+      registration_doy_name, registration_room, 
+      registration_phone, registration_date)
+    values (#{registrationId,jdbcType=INTEGER}, #{registrationPid,jdbcType=INTEGER}, 
+      #{registrationStuName,jdbcType=VARCHAR}, #{registrationStuSex,jdbcType=VARCHAR}, 
+      #{registrationDoyName,jdbcType=VARCHAR}, #{registrationRoom,jdbcType=VARCHAR}, 
+      #{registrationPhone,jdbcType=VARCHAR}, #{registrationDate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    insert into registration_stu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="registrationId != null" >
+        registration_id,
+      </if>
+      <if test="registrationPid != null" >
+        registration_pid,
+      </if>
+      <if test="registrationStuName != null" >
+        registration_stu_name,
+      </if>
+      <if test="registrationStuSex != null" >
+        registration_stu_sex,
+      </if>
+      <if test="registrationDoyName != null" >
+        registration_doy_name,
+      </if>
+      <if test="registrationRoom != null" >
+        registration_room,
+      </if>
+      <if test="registrationPhone != null" >
+        registration_phone,
+      </if>
+      <if test="registrationDate != null" >
+        registration_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="registrationId != null" >
+        #{registrationId,jdbcType=INTEGER},
+      </if>
+      <if test="registrationPid != null" >
+        #{registrationPid,jdbcType=INTEGER},
+      </if>
+      <if test="registrationStuName != null" >
+        #{registrationStuName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationStuSex != null" >
+        #{registrationStuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationDoyName != null" >
+        #{registrationDoyName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationRoom != null" >
+        #{registrationRoom,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationPhone != null" >
+        #{registrationPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationDate != null" >
+        #{registrationDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.Hong.ssm.bean.RegistrationStuExample" resultType="java.lang.Integer" >
+    select count(*) from registration_stu
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update registration_stu
+    <set >
+      <if test="record.registrationId != null" >
+        registration_id = #{record.registrationId,jdbcType=INTEGER},
+      </if>
+      <if test="record.registrationPid != null" >
+        registration_pid = #{record.registrationPid,jdbcType=INTEGER},
+      </if>
+      <if test="record.registrationStuName != null" >
+        registration_stu_name = #{record.registrationStuName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.registrationStuSex != null" >
+        registration_stu_sex = #{record.registrationStuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="record.registrationDoyName != null" >
+        registration_doy_name = #{record.registrationDoyName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.registrationRoom != null" >
+        registration_room = #{record.registrationRoom,jdbcType=VARCHAR},
+      </if>
+      <if test="record.registrationPhone != null" >
+        registration_phone = #{record.registrationPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.registrationDate != null" >
+        registration_date = #{record.registrationDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update registration_stu
+    set registration_id = #{record.registrationId,jdbcType=INTEGER},
+      registration_pid = #{record.registrationPid,jdbcType=INTEGER},
+      registration_stu_name = #{record.registrationStuName,jdbcType=VARCHAR},
+      registration_stu_sex = #{record.registrationStuSex,jdbcType=VARCHAR},
+      registration_doy_name = #{record.registrationDoyName,jdbcType=VARCHAR},
+      registration_room = #{record.registrationRoom,jdbcType=VARCHAR},
+      registration_phone = #{record.registrationPhone,jdbcType=VARCHAR},
+      registration_date = #{record.registrationDate,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    update registration_stu
+    <set >
+      <if test="registrationPid != null" >
+        registration_pid = #{registrationPid,jdbcType=INTEGER},
+      </if>
+      <if test="registrationStuName != null" >
+        registration_stu_name = #{registrationStuName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationStuSex != null" >
+        registration_stu_sex = #{registrationStuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationDoyName != null" >
+        registration_doy_name = #{registrationDoyName,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationRoom != null" >
+        registration_room = #{registrationRoom,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationPhone != null" >
+        registration_phone = #{registrationPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationDate != null" >
+        registration_date = #{registrationDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.Hong.ssm.bean.RegistrationStu" >
+    update registration_stu
+    set registration_pid = #{registrationPid,jdbcType=INTEGER},
+      registration_stu_name = #{registrationStuName,jdbcType=VARCHAR},
+      registration_stu_sex = #{registrationStuSex,jdbcType=VARCHAR},
+      registration_doy_name = #{registrationDoyName,jdbcType=VARCHAR},
+      registration_room = #{registrationRoom,jdbcType=VARCHAR},
+      registration_phone = #{registrationPhone,jdbcType=VARCHAR},
+      registration_date = #{registrationDate,jdbcType=VARCHAR}
+    where registration_id = #{registrationId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Hong.ssm.dao.StuDoyMapper" >
+  <resultMap id="BaseResultMap" type="com.Hong.ssm.bean.StuDoy" >
+    <id column="doy_id" property="doyId" jdbcType="INTEGER" />
+    <result column="doy_name" property="doyName" jdbcType="VARCHAR" />
+    <result column="doy_remark" property="doyRemark" jdbcType="VARCHAR" />
+    <result column="doy_pid" property="doyPid" jdbcType="INTEGER" />
+    <result column="doy_users" property="doyUsers" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    doy_id, doy_name, doy_remark, doy_pid, doy_users
+  </sql>
+  <!-- 宿舍楼列表查询 -->
+  <select id="selStuDoylist" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.StuDoy" >
+    select 
+    <include refid="Base_Column_List" />
+    from stu_doy
+     <where>
+		 <if test="doyName!=null">
+			doy_name like concat('%',#{doyName},'%')
+		</if>
+	</where>
+  </select>
+  
+  <!-- 查询宿舍楼为1的男生宿舍 -->
+  <select id="selDoyNamelist1" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.StuDoy" >
+    select 
+    <include refid="Base_Column_List" />
+    from stu_doy where doy_pid=1
+  </select>
+   <!-- 查询宿舍楼为2的女生宿舍 -->
+  <select id="selDoyNamelist2" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.StuDoy" >
+    select 
+    <include refid="Base_Column_List" />
+    from stu_doy where doy_pid=2
+  </select>
+   <!--  查询ID -->
+  <select id="selStuDoyByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from stu_doy
+    where doy_id = #{doyId,jdbcType=INTEGER}
+  </select>
+  <!--  添加 -->
+  <insert id="addStuDoy" parameterType="com.Hong.ssm.bean.StuDoy" >
+    insert into stu_doy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="doyId != null" >
+        doy_id,
+      </if>
+      <if test="doyName != null" >
+        doy_name,
+      </if>
+      <if test="doyRemark != null" >
+        doy_remark,
+      </if>
+      <if test="doyPid != null" >
+        doy_pid,
+      </if>
+      <if test="doyUsers != null" >
+        doy_users,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="doyId != null" >
+        #{doyId,jdbcType=INTEGER},
+      </if>
+      <if test="doyName != null" >
+        #{doyName,jdbcType=VARCHAR},
+      </if>
+      <if test="doyRemark != null" >
+        #{doyRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="doyPid != null" >
+        #{doyPid,jdbcType=INTEGER},
+      </if>
+      <if test="doyUsers != null" >
+        #{doyUsers,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+      <!--  删除 -->
+   <delete id="delStuDoy" parameterType="java.lang.Integer" >
+    delete from stu_doy
+    where doy_id = #{doyId,jdbcType=INTEGER}
+  </delete>
+        <!--  修改 -->
+  <update id="editStuDoy" parameterType="com.Hong.ssm.bean.StuDoy" >
+    update stu_doy
+    <set >
+      <if test="doyName != null" >
+        doy_name = #{doyName,jdbcType=VARCHAR},
+      </if>
+      <if test="doyRemark != null" >
+        doy_remark = #{doyRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="doyPid != null" >
+        doy_pid = #{doyPid,jdbcType=INTEGER},
+      </if>
+      <if test="doyUsers != null" >
+        doy_users = #{doyUsers,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where doy_id = #{doyId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.StuDoyExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from stu_doy
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from stu_doy
+    where doy_id = #{doyId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from stu_doy
+    where doy_id = #{doyId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.Hong.ssm.bean.StuDoyExample" >
+    delete from stu_doy
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.Hong.ssm.bean.StuDoy" >
+    insert into stu_doy (doy_id, doy_name, doy_remark, 
+      doy_pid, doy_users)
+    values (#{doyId,jdbcType=INTEGER}, #{doyName,jdbcType=VARCHAR}, #{doyRemark,jdbcType=VARCHAR}, 
+      #{doyPid,jdbcType=INTEGER}, #{doyUsers,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.Hong.ssm.bean.StuDoy" >
+    insert into stu_doy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="doyId != null" >
+        doy_id,
+      </if>
+      <if test="doyName != null" >
+        doy_name,
+      </if>
+      <if test="doyRemark != null" >
+        doy_remark,
+      </if>
+      <if test="doyPid != null" >
+        doy_pid,
+      </if>
+      <if test="doyUsers != null" >
+        doy_users,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="doyId != null" >
+        #{doyId,jdbcType=INTEGER},
+      </if>
+      <if test="doyName != null" >
+        #{doyName,jdbcType=VARCHAR},
+      </if>
+      <if test="doyRemark != null" >
+        #{doyRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="doyPid != null" >
+        #{doyPid,jdbcType=INTEGER},
+      </if>
+      <if test="doyUsers != null" >
+        #{doyUsers,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.Hong.ssm.bean.StuDoyExample" resultType="java.lang.Integer" >
+    select count(*) from stu_doy
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update stu_doy
+    <set >
+      <if test="record.doyId != null" >
+        doy_id = #{record.doyId,jdbcType=INTEGER},
+      </if>
+      <if test="record.doyName != null" >
+        doy_name = #{record.doyName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.doyRemark != null" >
+        doy_remark = #{record.doyRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.doyPid != null" >
+        doy_pid = #{record.doyPid,jdbcType=INTEGER},
+      </if>
+      <if test="record.doyUsers != null" >
+        doy_users = #{record.doyUsers,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update stu_doy
+    set doy_id = #{record.doyId,jdbcType=INTEGER},
+      doy_name = #{record.doyName,jdbcType=VARCHAR},
+      doy_remark = #{record.doyRemark,jdbcType=VARCHAR},
+      doy_pid = #{record.doyPid,jdbcType=INTEGER},
+      doy_users = #{record.doyUsers,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.Hong.ssm.bean.StuDoy" >
+    update stu_doy
+    <set >
+      <if test="doyName != null" >
+        doy_name = #{doyName,jdbcType=VARCHAR},
+      </if>
+      <if test="doyRemark != null" >
+        doy_remark = #{doyRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="doyPid != null" >
+        doy_pid = #{doyPid,jdbcType=INTEGER},
+      </if>
+      <if test="doyUsers != null" >
+        doy_users = #{doyUsers,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where doy_id = #{doyId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.Hong.ssm.bean.StuDoy" >
+    update stu_doy
+    set doy_name = #{doyName,jdbcType=VARCHAR},
+      doy_remark = #{doyRemark,jdbcType=VARCHAR},
+      doy_pid = #{doyPid,jdbcType=INTEGER},
+      doy_users = #{doyUsers,jdbcType=VARCHAR}
+    where doy_id = #{doyId,jdbcType=INTEGER}
+  </update>
+</mapper>

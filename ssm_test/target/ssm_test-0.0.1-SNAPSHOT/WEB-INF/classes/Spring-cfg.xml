@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd">
+	 
+		
+		<context:property-placeholder  location="classpath:db.properties" />
+		<context:component-scan base-package="com.Hong"></context:component-scan>
+		
+		<mvc:annotation-driven/>
+		
+		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置后缀 -->
+			<property name="suffix" value=".jsp"/>
+		</bean>	
+		
+		
+	 
+		<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" > 
+		    <property name="driverClass" value="com.mysql.jdbc.Driver" />
+			<property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/mybatistest" />
+			<property name="user" value="root" />
+			<property name="password" value="root" />  
+		 </bean> 
+
+	 	 <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	   		<!-- 注入数据源 -->
+	   		<property name="dataSource" ref="dataSource" />
+	     	<!-- 加载mybatis的配置文件 -->
+	   	 <property name="configLocation"  value="classpath:mybatis-config.xml" /> 
+	   		<!-- 如果 mapping文件和mapper接口类同名 并且在一个包下 无需配置
+	   		<property name="mapperLocations" value="classpath*:mapping/*.xml" />
+	   		 -->
+	
+	   		  <!-- 实体类别名 -->
+	   		<property name="typeAliasesPackage" value="com.Hong.ssm.bean"/>
+	   		
+	   <!--  <property name="configuration">
+		    <bean class="org.apache.ibatis.session.Configuration">
+		      <property name="logImpl" value="?"/>
+		    </bean>
+		  </property> -->
+	   		
+	   		
+	   	</bean>
+
+	    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    		<!--mapper接口所在的包     多个包 ,或者;隔开 -->
+    		<property name="basePackage"  value="com.Hong.ssm.dao" />
+    		<property name="sqlSessionFactoryBeanName"  value="sqlSessionFactory" />
+    	</bean>
+    	
+    	<!-- 事务管理器    使用JDBC的事务控制-->
+		<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+			<property name="dataSource" ref="dataSource"></property>
+		</bean>
+		
+		
+		<!-- 定义通知 -声明式事务-->
+		<tx:advice id="txAdvice" transaction-manager="transactionManager">
+			<tx:attributes>
+				<tx:method name="add*"  propagation="REQUIRED"/>
+				<tx:method name="create*" propagation="REQUIRED"/>
+				<tx:method name="save*" propagation="REQUIRED"/>
+				<tx:method name="edit*" propagation="REQUIRED"/>
+				<tx:method name="del*"  propagation="REQUIRED"/>
+				<tx:method name="sel*"  propagation="SUPPORTS"/>
+			</tx:attributes>
+		</tx:advice>
+		
+		<!-- aop切入事务  到service实现 包下的所有类的所有方法-->
+		<aop:config>
+			<aop:advisor advice-ref="txAdvice"  pointcut="execution(* com.Hong.*.service.impl.*.*(..))"  />
+		</aop:config>
+		
+		
+</beans>	 

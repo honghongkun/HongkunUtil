@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Hong.ssm.dao.StuZyMapper" >
+  <resultMap id="BaseResultMap" type="com.Hong.ssm.bean.StuZy" >
+    <id column="Zy_id" property="zyId" jdbcType="INTEGER" />
+    <result column="Zy_pid" property="zyPid" jdbcType="INTEGER" />
+    <result column="Zy_name" property="zyName" jdbcType="VARCHAR" />
+    <result column="Zy_order" property="zyOrder" jdbcType="INTEGER" />
+    <result column="Zy_url" property="zyUrl" jdbcType="VARCHAR" />
+    <result column="Zy_show" property="zyShow" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    Zy_id, Zy_pid, Zy_name, Zy_order, Zy_url, Zy_show
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.Hong.ssm.bean.StuZyExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from stu_zy
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from stu_zy
+    where Zy_id = #{zyId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from stu_zy
+    where Zy_id = #{zyId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.Hong.ssm.bean.StuZyExample" >
+    delete from stu_zy
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.Hong.ssm.bean.StuZy" >
+    insert into stu_zy (Zy_id, Zy_pid, Zy_name, 
+      Zy_order, Zy_url, Zy_show
+      )
+    values (#{zyId,jdbcType=INTEGER}, #{zyPid,jdbcType=INTEGER}, #{zyName,jdbcType=VARCHAR}, 
+      #{zyOrder,jdbcType=INTEGER}, #{zyUrl,jdbcType=VARCHAR}, #{zyShow,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.Hong.ssm.bean.StuZy" >
+    insert into stu_zy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zyId != null" >
+        Zy_id,
+      </if>
+      <if test="zyPid != null" >
+        Zy_pid,
+      </if>
+      <if test="zyName != null" >
+        Zy_name,
+      </if>
+      <if test="zyOrder != null" >
+        Zy_order,
+      </if>
+      <if test="zyUrl != null" >
+        Zy_url,
+      </if>
+      <if test="zyShow != null" >
+        Zy_show,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zyId != null" >
+        #{zyId,jdbcType=INTEGER},
+      </if>
+      <if test="zyPid != null" >
+        #{zyPid,jdbcType=INTEGER},
+      </if>
+      <if test="zyName != null" >
+        #{zyName,jdbcType=VARCHAR},
+      </if>
+      <if test="zyOrder != null" >
+        #{zyOrder,jdbcType=INTEGER},
+      </if>
+      <if test="zyUrl != null" >
+        #{zyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="zyShow != null" >
+        #{zyShow,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.Hong.ssm.bean.StuZyExample" resultType="java.lang.Integer" >
+    select count(*) from stu_zy
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update stu_zy
+    <set >
+      <if test="record.zyId != null" >
+        Zy_id = #{record.zyId,jdbcType=INTEGER},
+      </if>
+      <if test="record.zyPid != null" >
+        Zy_pid = #{record.zyPid,jdbcType=INTEGER},
+      </if>
+      <if test="record.zyName != null" >
+        Zy_name = #{record.zyName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zyOrder != null" >
+        Zy_order = #{record.zyOrder,jdbcType=INTEGER},
+      </if>
+      <if test="record.zyUrl != null" >
+        Zy_url = #{record.zyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zyShow != null" >
+        Zy_show = #{record.zyShow,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update stu_zy
+    set Zy_id = #{record.zyId,jdbcType=INTEGER},
+      Zy_pid = #{record.zyPid,jdbcType=INTEGER},
+      Zy_name = #{record.zyName,jdbcType=VARCHAR},
+      Zy_order = #{record.zyOrder,jdbcType=INTEGER},
+      Zy_url = #{record.zyUrl,jdbcType=VARCHAR},
+      Zy_show = #{record.zyShow,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.Hong.ssm.bean.StuZy" >
+    update stu_zy
+    <set >
+      <if test="zyPid != null" >
+        Zy_pid = #{zyPid,jdbcType=INTEGER},
+      </if>
+      <if test="zyName != null" >
+        Zy_name = #{zyName,jdbcType=VARCHAR},
+      </if>
+      <if test="zyOrder != null" >
+        Zy_order = #{zyOrder,jdbcType=INTEGER},
+      </if>
+      <if test="zyUrl != null" >
+        Zy_url = #{zyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="zyShow != null" >
+        Zy_show = #{zyShow,jdbcType=INTEGER},
+      </if>
+    </set>
+    where Zy_id = #{zyId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.Hong.ssm.bean.StuZy" >
+    update stu_zy
+    set Zy_pid = #{zyPid,jdbcType=INTEGER},
+      Zy_name = #{zyName,jdbcType=VARCHAR},
+      Zy_order = #{zyOrder,jdbcType=INTEGER},
+      Zy_url = #{zyUrl,jdbcType=VARCHAR},
+      Zy_show = #{zyShow,jdbcType=INTEGER}
+    where Zy_id = #{zyId,jdbcType=INTEGER}
+  </update>
+</mapper>
